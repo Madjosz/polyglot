@@ -17,7 +17,7 @@
 // @require http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js
 // @require http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js
 // @require https://greasyfork.org/scripts/21927-arrive-js/code/arrivejs.js?version=198809
-// @require https://rawgit.com/notifyjs/notifyjs/master/dist/notify.js
+// @require https://raw.githubusercontent.com/jpillora/notifyjs/refs/heads/master/dist/notify.js
 // @require https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js
 // @require https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js
 // ==/UserScript==
@@ -230,19 +230,19 @@ function addCopyButton(codeElem) {
     }
 
     let parent = codeElem.parent("pre");
-    if (!parent.siblings(".glot-copy-container").length) {
-        parent.wrap("<div class='glot-code-wrapper' style='position: relative;'></div>");
-        parent.before(`
-            <div class='glot-copy-container' style='position: absolute; top: 5px; right: 5px; z-index: 100;'>
-                <button class='glotBtnCopy' type='button' title='Copy to clipboard'>${btnCaption}</button>
-            </div>
-        `);
+    if (parent.siblings(".glot-copy-container").length) {
+        return;
     }
+    parent.wrap("<div class='glot-code-wrapper' style='position: relative;'></div>");
+    parent.before(`
+        <div class='glot-copy-container' style='position: absolute; top: 5px; right: 5px; z-index: 100;'>
+            <button class='glotBtnCopy' type='button' title='Copy to clipboard'>${btnCaption}</button>
+        </div>
+    `);
+
     let btn = parent.prev().find("button").first();
-    // handler must be reattached every time
     btn.on("click", copyToClipboardFunc(codeElem));
 }
-
 
 /********************************
  *           LC lambdas         *
@@ -937,7 +937,7 @@ function getOrCreateSettingsObj() {
     let configObj = GM_getValue(glotSettingsKey);
     if(!configObj) {
         configObj = {};
-        checkBoxes.forEach(({name, choice})=>{configObj[name] = choice === Boolean ? true : choice[0];});
+        checkBoxes.filter(setting => setting.choice).forEach(({name, choice})=>{configObj[name] = choice === Boolean ? true : choice[0];});
     }
     return configObj;
 }
